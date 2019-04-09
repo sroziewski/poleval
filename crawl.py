@@ -1,63 +1,4 @@
-import requests
-import pickle
-
-from bs4 import BeautifulSoup
-
-
-def get_pickled(filename):
-    with open(dir + filename + '.pickle', 'rb') as handle:
-        data = pickle.load(handle)
-        handle.close()
-        return data
-
-
-def get_features(divs):
-    if not divs:
-        return []
-    divs_instances = divs.findAll("div", {"class": "wikibase-snakview-variation-valuesnak"})
-    instances = []
-    for div_instance in divs_instances:
-        if div_instance.findAll("a") and 'title' in div_instance.findAll("a")[0].attrs:
-            instances.append(div_instance.findAll("a")[0].attrs['title'])
-    return instances
-
-
-def get_subclasses(divs_subclasses):
-    subclasses = []
-    for div_instance in divs_subclasses:
-        subclasses.append(div_instance.findAll("a")[0].attrs['title'])
-    return subclasses
-
-
-def get_soup(id):
-    r = requests.get("https://www.wikidata.org/wiki/" + id)
-    return BeautifulSoup(r._content, 'html.parser')
-
-
-def get_divs(_soup, type_id):
-    r = _soup.findAll("div", {"id": type_id})
-    if r:
-        return r[0]
-    else:
-        return None
-
-
-def get_ids(_id, type_id, _categories_dict, _global_map, _original_id, _breakable):
-    features = get_features(get_divs(get_soup(_id), type_id))
-    found_mapping = extract_existing_mapping(features, _categories_dict)
-    if len(found_mapping) > 0:
-        _global_map[_original_id] = found_mapping[0]
-        _breakable.append(True)
-        return
-
-    for feat in features:
-        if feat not in _categories_dict and len(_breakable) == 0:
-            get_ids(feat, "P31", _categories_dict, _global_map, _original_id, _breakable)
-            get_ids(feat, "P279", _categories_dict, _global_map, _original_id, _breakable)
-
-
-def extract_existing_mapping(feats, _categories_dict):
-    return list(filter(lambda x: x in _categories_dict, feats))
+from poleval.lib.poleval import get_ids
 
 
 def get_mapping(_id, _global_map):
@@ -73,11 +14,6 @@ def get_mapping(_id, _global_map):
 # div2 = get_divs(get_soup("Q177"), "P279")
 #
 # f1 = get_features(div1)
-# f2 = get_features(div2)
-
-
-
-# ids2 = get_ids("Q177", "P279")
 
 
 categories_dict = {'Q5': "człowiek", 'Q2221906': "położenie geograficzne", 'Q11862829': "dyscyplina naukowa",

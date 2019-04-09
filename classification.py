@@ -7,7 +7,7 @@ from time import time
 import re, string;
 
 from poleval.lib.poleval import strip_string, add_to_map, get_pickled, save_to_file, get_test_data, \
-    get_polish_stopwords, get_label
+    get_polish_stopwords, get_label, EntityTuple
 
 
 def get_mapping_classes(jsons, types):
@@ -166,24 +166,3 @@ _t1 = get_label("rzymie", entity_tuples, pl_map, prefix_map, lemma_map,
 multi = 95
 process_batches(multi)
 
-# save_to_file("results-{}".format(multi), (found, not_found, errors))
-
-# l = get_label('George Washington', entity_tuples, pl_map, prefix_map, lemma_map)
-# l = get_label('Briana Kernighana ', entity_tuples, pl_map, prefix_map, lemma_map)
-# l = get_label('asocjacyjna tablica ', entity_tuples, pl_map, prefix_map, lemma_map)
-# l = get_label('tablica asocjacyjna', entity_tuples, pl_map, prefix_map, lemma_map)
-# l = get_label('tablic asocjacyjnych ', entity_tuples, pl_map, prefix_map, lemma_map)
-#
-# w1 = find_by_entity('rolniczego', entity_tuples, pl_map, prefix_map, lemma_map)
-# w2 = find_by_entity('rolniczy', entity_tuples, pl_map, prefix_map, lemma_map)
-
-# t0 = find_by_entity('George Washington', entity_tuples, pl_map, prefix_map, lemma_map)
-# t4 = find_by_entity('tablica asocjacyjna', entity_tuples, pl_map, prefix_map, lemma_map)
-# t4 = find_by_entity('tablic asocjacyjnych', entity_tuples, pl_map, prefix_map, lemma_map)
-#
-# t1 = find_by_entity("a", entity_tuples, pl_map, prefix_map, lemma_map)
-# t2 = find_by_entity("Brian Kernighan", entity_tuples, pl_map, prefix_map, lemma_map)
-
-# category_mappings = get_pickled("mappings.true")
-
-i = 1

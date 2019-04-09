@@ -1,17 +1,8 @@
-import csv
-import pickle
-import unicodedata
-import pandas as pd  # For data handling
-import multiprocessing
 from gensim.models import Word2Vec
-from gensim.models.phrases import Phrases, Phraser
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
-import re  # For preprocessing
 
-from time import time  # To time our operations
 from collections import defaultdict
-import spacy  # For preprocessing
 import logging  # Setting up the loggings to monitor gensim
 
 logging.basicConfig(format="%(levelname)s - %(asctime)s: %(message)s", datefmt='%H:%M:%S', level=logging.INFO)

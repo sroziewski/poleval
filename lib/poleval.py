@@ -1,4 +1,6 @@
+import csv
 import json
+import sys
 
 import editdistance
 import pickle
@@ -478,6 +480,10 @@ def get_text(divs):
     return text
 
 
+def _get_text(docs):
+    return ' '.join(map(lambda d: d.token, docs))
+
+
 def get_soup(_pl_entity_wiki):
     r = requests.get("https://www.wikidata.org/wiki/" + _pl_entity_wiki)
     return BeautifulSoup(r._content, 'html.parser')
@@ -551,7 +557,7 @@ def get_label(_entity, _entity_tuples, _pl_map, _prefix_map, _lemma_map, _stopwo
             i = 1
     else:
         return
-    if ''.join(_entity.split()) in pl_map:
+    if ''.join(_entity.split()) in _pl_map:
         __f = _pl_map[''.join(_entity.split())]
         if len(_entity.split()) == len(__f.cleaned_original_entity_space.split()):
             return [__f]
@@ -729,3 +735,282 @@ def add_to_map(__map, __disambiguation, __disambiguation_helper, __entity, __tup
     else:
         __map[__entity] = __tuple
         __disambiguation_helper[__entity] = __tuple
+
+
+def data_object_map(input_file, output_file_prefix):
+    docs_counter = 0
+    multi_counter = 0
+    input_data_map = {}
+    docs_limit = 100000
+    with open(input_file) as tsvfile:
+        tsv_reader = csv.reader(tsvfile, delimiter="\t")
+        for line in tsv_reader:
+            if docs_counter == docs_limit:
+                save_to_file(output_file_prefix.format(multi_counter), input_data_map)
+                input_data_map = {}
+                multi_counter += 1
+
+            if len(line) > 0:
+                data = DataItem(line)
+                if data.doc_id in input_data_map:
+                    input_data_map[data.doc_id].append(data)
+                else:
+                    input_data_map[data.doc_id] = [data]
+            docs_counter = len(input_data_map)
+        save_to_file(output_file_prefix.format(multi_counter), input_data_map)
+    tsvfile.close()
+
+
+def filter_empty_docs(docs):
+    data_map = {}
+    for key, doc_list in docs.items():
+        data_map[key] = list(filter(lambda d: len(d.token) > 1, doc_list))
+    return data_map
+
+
+def link_by_source_object_map(input_file, output_file):
+    input_data_map = {}
+    with open(input_file) as csv_file:
+        reader = csv.reader(csv_file, delimiter=",")
+        for line in reader:
+            if len(line) > 0:
+                link_by_source = LinkBySource(line)
+                input_data_map[link_by_source.source_id] = link_by_source
+        csv_file.close()
+        save_to_file(output_file, input_data_map)
+
+
+def filter_longer_tokens(docs):
+    data_map = {}
+    for key, doc_list in docs.items():
+        data_map[key] = list(filter(lambda d: len(d.token.split(' ')) > 1, doc_list))
+    return data_map
+
+
+def get_list_sentences(a_map):
+    return [sentence for key, sentence in a_map.items()]
+
+
+def page_object_map(input_file, output_file):
+    input_data_map = {}
+    with open(input_file) as csv_file:
+        reader = csv.reader(csv_file, delimiter=",")
+        for line in reader:
+            if len(line) > 0:
+                page = Page(line)
+                input_data_map[page.page_id] = page
+        csv_file.close()
+        save_to_file(output_file, input_data_map)
+
+
+def article_parent_object_map(input_file, output_file):
+    input_data_map = {}
+    with open(input_file) as csv_file:
+        reader = csv.reader(csv_file, delimiter=",")
+        for line in reader:
+            if len(line) > 0:
+                article_parent = ArticleParent(line)
+                input_data_map[article_parent.article_id] = article_parent
+        csv_file.close()
+        save_to_file(output_file, input_data_map)
+
+
+def category_parent_object_map(input_file, output_file):
+    input_data_map = {}
+    with open(input_file) as csv_file:
+        reader = csv.reader(csv_file, delimiter=",")
+        for line in reader:
+            if len(line) > 0:
+                category_parent = CategoryParent(line)
+                input_data_map[category_parent.category_id] = category_parent
+        csv_file.close()
+        save_to_file(output_file, input_data_map)
+
+
+def child_article_object_map(input_file, output_file):
+    input_data_map = {}
+    with open(input_file) as csv_file:
+        reader = csv.reader(csv_file, delimiter=",")
+        for line in reader:
+            if len(line) > 0:
+                child_article = ChildArticle(line)
+                input_data_map[child_article.category_id] = child_article
+        csv_file.close()
+        save_to_file(output_file, input_data_map)
+
+
+def child_category_object_map(input_file, output_file):
+    input_data_map = {}
+    with open(input_file) as csv_file:
+        reader = csv.reader(csv_file, delimiter=",")
+        for line in reader:
+            if len(line) > 0:
+                child_article = ChildCategory(line)
+                input_data_map[child_article.category_id] = child_article
+        csv_file.close()
+        save_to_file(output_file, input_data_map)
+
+
+def contains_digit(string):
+    return any(i.isdigit() for i in string)
+
+
+def clean_tuples(_list):
+    _new_list2 = []
+    for _tuple in _list:
+        _e1 = extract_tuple_text(_tuple[1])
+        _e1.extend(extract_tuple_text(_tuple[2])) if _tuple[2] else None
+        _new_list2.append((_tuple[0], set(flatten_list(_e1))))
+    return _new_list2
+
+
+def extract_tuple_text(_text, _lemma_map, _stopwords):
+    _l1 = []
+    for _t in _text.split():
+        if _t:
+            _ee = get_entity(_t, _lemma_map, _stopwords)
+            if _ee:
+                _l1.append(_ee)
+    return _l1
+
+
+def extract_existing_mapping(feats, _categories_dict):
+    return list(filter(lambda x: x in _categories_dict, feats))
+
+
+def get_ids(_id, type_id, _categories_dict, _global_map, _original_id, _breakable):
+    features = get_features(get_divs(get_soup(_id), type_id))
+    found_mapping = extract_existing_mapping(features, _categories_dict)
+    if len(found_mapping) > 0:
+        _global_map[_original_id] = found_mapping[0]
+        _breakable.append(True)
+        return
+
+    for feat in features:
+        if feat not in _categories_dict and len(_breakable) == 0:
+            get_ids(feat, "P31", _categories_dict, _global_map, _original_id, _breakable)
+            get_ids(feat, "P279", _categories_dict, _global_map, _original_id, _breakable)
+
+
+def get_features(divs):
+    if not divs:
+        return []
+    divs_instances = divs.findAll("div", {"class": "wikibase-snakview-variation-valuesnak"})
+    instances = []
+    for div_instance in divs_instances:
+        if div_instance.findAll("a") and 'title' in div_instance.findAll("a")[0].attrs:
+            instances.append(div_instance.findAll("a")[0].attrs['title'])
+    return instances
+
+
+def get_subclasses(divs_subclasses):
+    subclasses = []
+    for div_instance in divs_subclasses:
+        subclasses.append(div_instance.findAll("a")[0].attrs['title'])
+    return subclasses
+
+
+def get_context2(tuples):
+    context = []
+    sentences = []
+    handy = []
+    flag = 0
+    is_entity = False
+    for _ in tuples:
+        if _.type == 'interp' and _.lemma == '.':
+            if flag == 1:
+                context.append(handy)
+                flag = 0
+            if is_entity:
+                if len(sentences) - 1 >= 0 and sentences[len(sentences) - 1] not in context:
+                    context.append(sentences[len(sentences) - 1])
+                if handy not in context:
+                    context.append(handy)
+                flag = 1
+            sentences.append(handy)
+            handy = []
+            is_entity = False
+        elif _.type != 'interp':
+            if _.is_entity:
+                is_entity = True
+            handy.append(_.lemma.split(':')[0].lower().translate(
+                {ord(i): None for i in ['”', '„', '(', ')', '{', '}', '[', ']']}))
+    if handy:
+        sentences.append(handy)
+        if is_entity:
+            context.append(sentences[len(sentences - 1)])
+            context.append(handy)
+    return context
+
+
+def _map_docs_to_sentences(docs):
+    data_map = {}
+    stopwords = get_polish_stopwords()
+    for key, doc_list in docs.items():
+        txt = get_clean_text(get_sentences_with_mentions(get_word_tuples(doc_list)), stopwords)
+        if len(txt) > 0:
+            data_map[key] = txt
+    return data_map
+
+
+def categories_to_vectors(_model, _categories):
+    _category_vectors = []
+    for category in _categories:
+        if len(category.split()) > 1:
+            vec = (_model.wv.get_vector(category.split()[0]) + _model.wv.get_vector(
+                category.split()[1])) / 2
+        else:
+            vec = _model.wv.get_vector(category)
+        _category_vectors.append(vec)
+    return _category_vectors
+
+
+class recursion_limit:
+    def __init__(self, limit):
+        self.limit = limit
+        self.old_limit = sys.getrecursionlimit()
+
+    def __enter__(self):
+        sys.setrecursionlimit(self.limit)
+
+    def __exit__(self, type, value, tb):
+        sys.setrecursionlimit(self.old_limit)
+
+
+def filter_out_blinds(features):
+    return list(filter(lambda x: x not in (
+    'Q55983715', 'Q23958852', 'Q24017414', 'Q24017465', 'Q16889133', 'Q21146257', 'Q17538690', 'Q83306', 'Q328'),
+                       features))
+
+
+def get_outsiders(jsons, types):
+    category_map = {}
+    _outsiders = []
+    for _json in jsons:
+        flag = 0
+        if 'P31' in _json.keys():
+            for subtype in _json['P31']:
+                if subtype in types:
+                    category_map[_json['id']] = subtype
+                    flag = 1
+        elif 'P279' in _json.keys():
+            for subtype in _json['P279']:
+                if subtype in types:
+                    category_map[_json['id']] = subtype
+                    flag = 1
+        if flag == 0:
+            _outsiders.append(_json)
+    return list(map(lambda x: x['id'], _outsiders))
+
+
+def get_lemma_map(data):
+    _lemma_map = {}
+    for _data_item_list in data.values():
+        for _data_item in _data_item_list:
+            to_exclude = [' ', '”', '„', '(', ')', '{', '}', '[', ']', '.', ',', '!', '?', '%', '\'', '\\', '/', '+',
+                          '-', '=',
+                          ':', '*', '@', '#', '$', '^', '&', '_', '<', '>', '"', '÷']
+            _entity = _data_item.token.lower().translate(
+                {ord(i): None for i in to_exclude}) if _data_item.token else False
+            _lemma_map[_entity] = _data_item.lemma
+    return _lemma_map

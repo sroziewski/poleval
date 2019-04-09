@@ -1,29 +1,6 @@
-import pickle
-import json
 from gensim.models import Word2Vec
 
-from poleval.lib.poleval import get_polish_stopwords, get_clean_text, get_word_tuples, map_docs_to_sentences, \
-    get_pickled
-
-
-def extract_main_entity_category(jsons, types, _category_vectors, _model_v2w, _categories, categories_dict):
-    category_map = {}
-    outsiders = []
-    for _json in jsons:
-        flag = 0
-        if 'P31' in _json.keys():
-            for subtype in _json['P31']:
-                if subtype in types:
-                    category_map[_json['id']] = subtype
-                    flag = 1
-        elif 'P279' in _json.keys():
-            for subtype in _json['P279']:
-                if subtype in types:
-                    category_map[_json['id']] = subtype
-                    flag = 1
-        if flag == 0:
-            outsiders.append(_json)
-    i = 1
+from poleval.lib.poleval import map_docs_to_sentences, get_pickled, extract_main_entity_category
 
 
 def get_entity_types(filename):
