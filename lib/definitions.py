@@ -1,4 +1,4 @@
-
+# coding=utf-8
 
 dir = '/home/szymon/juno/challenge/poleval/'
 
