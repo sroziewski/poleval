@@ -1,7 +1,5 @@
 import pickle
 
-dir = '/home/szymon/juno/challenge/poleval/'
-
 
 def get_pickled(filename):
     with open(dir + filename + '.pickle', 'rb') as handle:

@@ -1,13 +1,8 @@
 # coding=utf-8
 
-from gensim.models import Word2Vec
 import pickle
-import json
-import editdistance
-from time import time
-import re, string;
 
-dir = '/home/szymon/juno/challenge/poleval/'
+from poleval.lib.poleval import levenshtein, get_sensitivity
 
 
 def get_pickled(filename):

@@ -4,6 +4,7 @@ from gensim.models.phrases import Phrases, Phraser
 
 import logging
 
+from poleval.lib.definitions import saved_data_file_tokens_entities_tags
 from poleval.lib.poleval import WordTuple, get_pickled, get_lemma_map, save_to_file, map_docs_to_sentences, \
     flatten_list, get_mentions
 
@@ -44,38 +45,18 @@ def get_bigram_transformer(sentences):
 
 def process_batches_for_lemma():
     for i in range(0, 19):
-        data = get_pickled(saved_data_file.format(i))
+        data = get_pickled(saved_data_file_tokens_entities_tags.format(i))
         lemma_map = get_lemma_map(data)
     save_to_file("lemma_map", lemma_map)
 
 
 def process_batches(sentences_out):
     for i in range(0, 19):
-        data = get_pickled(saved_data_file.format(i))
+        data = get_pickled(saved_data_file_tokens_entities_tags.format(i))
         data_map_of_sentences = map_docs_to_sentences(data)
         sentences_for_docs = get_list_sentences(data_map_of_sentences)
         sentences = flatten_list(sentences_for_docs)
         sentences_out.append(sentences)
-
-# input_file = dir + 'tokens-with-entities.tsv'
-# input_file = dir + 'tokens-with-entities-and-tags_1mln.tsv'
-saved_data_file = "100000/tokens-with-entities_{}"
-# saved_data_file = "20000/tokens-with-entities-and-tags_1mln"
-# data_object_map(input_file, saved_data_file)
-
-pages_input_file = dir + 'wikipedia-data/page.csv'
-article_parents_input_file = dir + 'wikipedia-data/articleParents.csv'
-category_parents_input_file = dir + 'wikipedia-data/categoryParents.csv'
-child_articles_input_file = dir + 'wikipedia-data/childArticles.csv'
-child_categories_input_file = dir + 'wikipedia-data/childCategories.csv'
-link_by_source_input_file = dir + 'wikipedia-data/linkBySource.csv'
-pages_output_file = 'pages'
-article_parents_output_file = 'articleParents'
-category_parents_output_file = 'categoryParents'
-child_articles_output_file = 'childArticles'
-child_categories_output_file = 'childCategories'
-link_by_source_output_file = 'linkBySource'
-
 
 # page_object_map(pages_input_file, pages_output_file)
 # article_parent_object_map(article_parents_input_file, article_parents_output_file)

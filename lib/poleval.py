@@ -7,10 +7,6 @@ import pickle
 import re
 import requests
 from bs4 import BeautifulSoup
-from gensim.models import Word2Vec
-import numpy as np
-
-dir = '/home/szymon/juno/challenge/poleval/'
 
 
 def levenshtein(s, t):

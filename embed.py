@@ -4,9 +4,6 @@ import numpy as np
 from poleval.lib.poleval import levenshtein, flatten_list, strip_string, get_entity, get_polish_stopwords, get_pickled, \
     save_to_file
 
-input_file = dir + 'test/task3_test.tsv'
-saved_data_file = "test/task3_test"
-
 
 # data_object_map(input_file, saved_data_file)
 # data = get_pickled(saved_data_file)

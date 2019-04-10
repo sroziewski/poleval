@@ -7,12 +7,12 @@ from gensim.models.phrases import Phrases, Phraser
 from time import time  # To time our operations
 import logging
 
+from poleval.lib.definitions import saved_data_file_tokens_entities_tags
 from poleval.lib.poleval import get_pickled, map_docs_to_sentences, get_list_sentences, get_polish_stopwords, \
     contains_digit, flatten_list, save_to_file, strip_string
 
 logging.basicConfig(format="%(levelname)s - %(asctime)s: %(message)s", datefmt='%H:%M:%S', level=logging.INFO)
 
-dir = '/home/szymon/juno/challenge/poleval/'
 syntax_split_keyword = 'syntaxsplit'
 parser = ListParser(syntaxsplit_word=syntax_split_keyword)
 stemmer = Morfologik()
@@ -82,46 +82,20 @@ def _get_lemma_map(data):
     return _lemma_map
 
 
-
 def get_bigram_transformer(sentences):
     return Phrases([sentence for sentence in sentences], min_count=30, progress_per=10000)
 
-
-input_file = dir + 'tokens-with-entities-and-tags.tsv'
-# input_file = dir + 'tokens-with-entities-and-tags_1mln.tsv'
-saved_data_file = "20000/tokens-with-entities_{}"
-saved_data_file = "1000/tokens-with-entities_{}"
-# saved_data_file = "tokens-with-entities_{}"
-# saved_data_file = "20000/tokens-with-entities-and-tags_1mln"
 
 # t = time()
 # data_object_map(input_file, saved_data_file)
 # print('Time to build vocab: {} mins'.format(round((time() - t) / 60, 2)))
 
 
-pages_input_file = dir + 'wikipedia-data/page.csv'
-article_parents_input_file = dir + 'wikipedia-data/articleParents.csv'
-category_parents_input_file = dir + 'wikipedia-data/categoryParents.csv'
-child_articles_input_file = dir + 'wikipedia-data/childArticles.csv'
-child_categories_input_file = dir + 'wikipedia-data/childCategories.csv'
-link_by_source_input_file = dir + 'wikipedia-data/linkBySource.csv'
-pages_output_file = 'pages'
-article_parents_output_file = 'articleParents'
-category_parents_output_file = 'categoryParents'
-child_articles_output_file = 'childArticles'
-child_categories_output_file = 'childCategories'
-link_by_source_output_file = 'linkBySource'
-
-
-
-saved_data_file = '20000/tokens-with-entities-and-tags_1mln'
-
-
 def process_batches_for_lemma():
     for i in range(0, 19):
         t = time()
-        print(saved_data_file.format(i))
-        data = get_pickled(saved_data_file.format(i))
+        print(saved_data_file_tokens_entities_tags.format(i))
+        data = get_pickled(saved_data_file_tokens_entities_tags.format(i))
         lemma_map = get_lemma_map(data)
         save_to_file("lemma_map-{}".format(i), lemma_map)
 

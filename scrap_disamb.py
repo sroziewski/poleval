@@ -5,8 +5,6 @@ import requests
 from poleval.lib.poleval import strip_dangling_keywords, strip_string, get_entity, key_by_entity, get_pickled, \
     save_to_file
 
-dir = '/home/szymon/juno/challenge/poleval/'
-
 
 def process(tuples, _lemma_map, _stopwords):
     _merged_map = {}
@@ -115,5 +113,3 @@ data = merged_map_filtered[(j-1)*multi:j*multi]
 tuple_map = get_wikidata_words(data)
 save_to_file("tuple_map_scrap-{}".format(j), tuple_map)
 
-
-i = 1

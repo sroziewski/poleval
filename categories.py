@@ -8,22 +8,9 @@ logging.basicConfig(format="%(levelname)s - %(asctime)s: %(message)s", datefmt='
 
 # input_file = dir + 'tokens-with-entities.tsv'
 # input_file = dir + 'tokens-with-entities-and-tags_1mln.tsv'
-saved_data_file = "20000/tokens-with-entities_{}"
-saved_data_file = "20000/tokens-with-entities-and-tags_1mln"
+
 # data_object_map(input_file, saved_data_file)
 
-pages_input_file = dir + 'wikipedia-data/page.csv'
-article_parents_input_file = dir + 'wikipedia-data/articleParents.csv'
-category_parents_input_file = dir + 'wikipedia-data/categoryParents.csv'
-child_articles_input_file = dir + 'wikipedia-data/childArticles.csv'
-child_categories_input_file = dir + 'wikipedia-data/childCategories.csv'
-link_by_source_input_file = dir + 'wikipedia-data/linkBySource.csv'
-pages_output_file = 'pages'
-article_parents_output_file = 'articleParents'
-category_parents_output_file = 'categoryParents'
-child_articles_output_file = 'childArticles'
-child_categories_output_file = 'childCategories'
-link_by_source_output_file = 'linkBySource'
 
 
 # page_object_map(pages_input_file, pages_output_file)

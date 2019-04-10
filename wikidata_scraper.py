@@ -1,55 +1,6 @@
-import requests
-import pickle
-from bs4 import BeautifulSoup
 import sys
 
-dir = '/home/szymon/juno/challenge/poleval/'
-
-def get_soup(_pl_entity_wiki):
-    r = requests.get("https://pl.wikipedia.org/wiki/" + _pl_entity_wiki)
-    return BeautifulSoup(r._content, 'html.parser')
-
-
-def get_pickled(filename):
-    with open(dir + filename + '.pickle', 'rb') as handle:
-        data = pickle.load(handle)
-        handle.close()
-        return data
-
-
-def get_divs(_soup, type_id):
-    r = _soup.findAll("div", {"id": type_id})
-    if r:
-        return r[0]
-    else:
-        return None
-
-
-def get_text(divs):
-    text = ''
-    if not divs:
-        return []
-    content = get_divs(divs, "bodyContent")
-    if content:
-        ps = content.findAll("p")
-        for p in ps[:4]:
-            text += p.getText()
-
-    return text
-
-
-def save_to_file(filename, obj):
-    with open(dir + filename + '.pickle', 'wb') as handle:
-        pickle.dump(obj, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        handle.close()
-
-
-def get_subclasses(divs_subclasses):
-    subclasses = []
-    for div_instance in divs_subclasses:
-        subclasses.append(div_instance.findAll("a")[0].attrs['title'])
-    return subclasses
-
+from poleval.lib.poleval import get_pickled, get_soup, get_text, save_to_file
 
 entity_types_file_output = 'entity-types'
 

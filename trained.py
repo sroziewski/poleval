@@ -36,8 +36,6 @@ class TfidfEmbeddingVectorizer(object):
         ])
 
 
-dir = '/home/szymon/juno/challenge/poleval/'
-
 # w2vec_model_1 = Word2Vec.load(dir+"all-sentences-word2vec.model")
 # w2vec_model_2 = Word2Vec.load(dir+"all-sentences-word2vec-m2.model")
 w2vec_model_3 = Word2Vec.load(dir + "all-sentences-word2vec-m3.model")
