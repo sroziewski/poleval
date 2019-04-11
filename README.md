@@ -1,12 +1,12 @@
 # This is a solution to Poleval'19 Task number 3 related to Entity Linking
 
 
-### Below the Task description
+#### Below the Task description
 
 
 
-##Task 3: Entity linking
-###Task definition
+## Task 3: Entity linking
+### Task definition
 The task covers the identification of mentions of entities from a knowledge base (KB) in Polish texts. In this task as the reference KB we will use WikiData (WD), an offspring of Wikipedia – a knowledge base, that unifies structured data available in various editions of Wikipedia.
 
 For instance the following text:
