@@ -3,6 +3,7 @@
 
 #### Below the Task description
 
+The link to this competition http://poleval.pl/
 
 
 ## Task 3: Entity linking
