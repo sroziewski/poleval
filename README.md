@@ -1,7 +1,7 @@
 # This is a solution to Poleval'19 Task number 3 related to Entity Linking
 
 
-###Below the Task description
+### Below the Task description
 
 
 
