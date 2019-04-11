@@ -1,13 +1,13 @@
 # coding=utf-8
 
-from parser import decode_prepare_data, prepare_data, preprocess, stem
+from parser import decode_prepare_data, prepare_data, preprocess
 from lib.morfologik_2_1.custom_pymorfologik import Morfologik, ListParser
-from gensim.models.phrases import Phrases, Phraser
+from gensim.models.phrases import Phrases
 
 from time import time  # To time our operations
 import logging
 
-from poleval.lib.definitions import saved_data_file_tokens_entities_tags
+from poleval.lib.entity.definitions import saved_data_file_tokens_entities_tags
 from poleval.lib.poleval import get_pickled, map_docs_to_sentences, get_list_sentences, get_polish_stopwords, \
     contains_digit, flatten_list, save_to_file, strip_string
 

@@ -10,7 +10,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-from poleval.lib.definitions import dir
+from poleval.lib.entity.definitions import dir
 from poleval.lib.entity.structure import WordTriplet, Word, Entity, DataItem, LinkBySource, Page, ArticleParent, \
     CategoryParent, ChildArticle, ChildCategory, Mention
 

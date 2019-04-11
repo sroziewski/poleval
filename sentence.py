@@ -1,10 +1,8 @@
-import csv
-import pickle
-from gensim.models.phrases import Phrases, Phraser
+from gensim.models.phrases import Phrases
 
 import logging
 
-from poleval.lib.definitions import saved_data_file_tokens_entities_tags
+from poleval.lib.entity.definitions import saved_data_file_tokens_entities_tags
 from poleval.lib.poleval import WordTuple, get_pickled, get_lemma_map, save_to_file, map_docs_to_sentences, \
     flatten_list, get_mentions
 

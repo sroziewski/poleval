@@ -1,4 +1,4 @@
-from poleval.lib.definitions import saved_data_file_test_set, input_file_test_set
+from poleval.lib.entity.definitions import saved_data_file_test_set, input_file_test_set
 from poleval.lib.poleval import data_object_map, get_pickled, get_test_data
 
 data_object_map(input_file_test_set, saved_data_file_test_set)

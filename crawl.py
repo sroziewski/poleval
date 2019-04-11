@@ -1,4 +1,4 @@
-from poleval.lib.definitions import categories_dict
+from poleval.lib.entity.definitions import categories_dict
 from poleval.lib.poleval import get_ids
 
 

@@ -1,6 +1,6 @@
 from gensim.models import Word2Vec
 
-from poleval.lib.definitions import categories, categories_dict, entity_types_file, entity_types_file_output, \
+from poleval.lib.entity.definitions import categories, categories_dict, entity_types_file, entity_types_file_output, \
     saved_data_file_tokens_entities_tags
 from poleval.lib.poleval import map_docs_to_sentences, get_pickled, extract_main_entity_category
 

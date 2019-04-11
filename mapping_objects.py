@@ -1,12 +1,9 @@
-from gensim.models import Word2Vec
 import pickle
 import json
-import sys
 import editdistance
-from time import time
-import re, string;
+import re;
 
-from poleval.lib.definitions import categories_dict
+from poleval.lib.entity.definitions import categories_dict
 
 dir = '/home/szymon/juno/challenge/poleval/'
 
