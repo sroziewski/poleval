@@ -10,147 +10,13 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
+from poleval.lib.definitions import dir
+from poleval.lib.entity.structure import WordTriplet, Word, Entity, DataItem, LinkBySource, Page, ArticleParent, \
+    CategoryParent, ChildArticle, ChildCategory, Mention
+
 
 def levenshtein(s, t):
     return editdistance.eval(s, t)
-
-
-class EntityTuple(object):
-    def __init__(self, entity_en, entity_pl, original_type_id, root_type_id, pl_wiki, cleaned_pl_wiki):
-        self.original_entity = pl_wiki
-        self.cleaned_original_entity_space = strip_string_space(pl_wiki)
-        self.original_type_id = original_type_id
-        self.cleaned_original_entity = cleaned_pl_wiki
-        self.root_type_id = root_type_id
-        self.entity_en = strip_string(entity_en)
-        self.entity_pl = strip_string(entity_pl)
-        self.set_lev_sensitivity()
-        self.set_lev_similarity()
-
-    def set_lev_similarity(self):
-        if self.cleaned_original_entity:
-            if len(self.cleaned_original_entity) <= 5:
-                self.lev_similarity = 3
-            if len(self.cleaned_original_entity) > 5:
-                self.lev_similarity = 4
-
-    def set_lev_sensitivity(self):
-        if self.cleaned_original_entity:
-            if len(self.cleaned_original_entity) <= 3:
-                self.lev_sensitivity = 0
-            if len(self.cleaned_original_entity) > 3 and len(self.cleaned_original_entity) < 6:
-                self.lev_sensitivity = 2
-            if len(self.cleaned_original_entity) >= 6 and len(self.cleaned_original_entity) < 10:
-                self.lev_sensitivity = 3
-            if len(self.cleaned_original_entity) >= 10 and len(self.cleaned_original_entity) < 14:
-                self.lev_sensitivity = 4
-            if len(self.cleaned_original_entity) >= 14 and len(self.cleaned_original_entity) < 18:
-                self.lev_sensitivity = 5
-            if len(self.cleaned_original_entity) >= 18 and len(self.cleaned_original_entity) < 22:
-                self.lev_sensitivity = 6
-            if len(self.cleaned_original_entity) >= 22 and len(self.cleaned_original_entity) < 26:
-                self.lev_sensitivity = 7
-            if len(self.cleaned_original_entity) >= 26 and len(self.cleaned_original_entity) < 30:
-                self.lev_sensitivity = 8
-            if len(self.cleaned_original_entity) >= 30 and len(self.cleaned_original_entity) < 34:
-                self.lev_sensitivity = 9
-            if len(self.cleaned_original_entity) >= 34:
-                self.lev_sensitivity = 10
-
-        elif self.entity_en:
-            if len(self.entity_en) > 3 and len(self.entity_en) < 5:
-                self.lev_sensitivity = 1
-            if len(self.entity_en) >= 5 and len(self.entity_en) < 7:
-                self.lev_sensitivity = 2
-            if len(self.entity_en) >= 7 and len(self.entity_en) < 11:
-                self.lev_sensitivity = 3
-            if len(self.entity_en) >= 11 and len(self.entity_en) < 14:
-                self.lev_sensitivity = 4
-            if len(self.entity_en) >= 14 and len(self.entity_en) < 18:
-                self.lev_sensitivity = 5
-            if len(self.entity_en) >= 18 and len(self.entity_en) < 22:
-                self.lev_sensitivity = 6
-            if len(self.entity_en) >= 22 and len(self.entity_en) < 26:
-                self.lev_sensitivity = 7
-            if len(self.entity_en) >= 26 and len(self.entity_en) < 30:
-                self.lev_sensitivity = 8
-            if len(self.entity_en) >= 30 and len(self.entity_en) < 34:
-                self.lev_sensitivity = 9
-            if len(self.entity_en) >= 34:
-                self.lev_sensitivity = 10
-
-    def similar_to(self, _entity, _entities):
-        _l = self.cleaned_original_entity_space.split()
-        if len(_l) > 2 and len(_entities) > 2 and _l[0][:self.lev_similarity] == _entities[0][:self.lev_similarity] and \
-                _l[2][:self.lev_similarity] == _entities[2][:self.lev_similarity] and _l[1][
-                                                                                      :self.lev_similarity] == \
-                _entities[1][:self.lev_similarity] and self.lev_sensitivity and levenshtein(
-            self.cleaned_original_entity, _entity) < self.lev_sensitivity:
-            return True
-        if len(_l) > 1 and len(_entities) > 1 and _l[0][:self.lev_similarity] == _entities[0][:self.lev_similarity] and \
-                _l[1][
-                :self.lev_similarity] == \
-                _entities[1][:self.lev_similarity] and self.lev_sensitivity and levenshtein(
-            self.cleaned_original_entity, _entity) < self.lev_sensitivity:
-            return True
-
-        if _l[0][:self.lev_similarity] == _entities[0][:self.lev_similarity] and self.lev_sensitivity and levenshtein(
-                self.cleaned_original_entity, _entity) < self.lev_sensitivity:
-            return True
-
-
-class DataItem(object):
-    def __init__(self, array):
-        self.doc_id = array[0]
-        self.token = array[1]
-        self.lemma = array[2].strip()
-        self.preceding_space = array[3]
-        self.morphosyntactic_tags = array[4]
-        self.link_title = array[5]
-        self.entity_id = array[6]
-
-
-class Page(object):
-    def __init__(self, array):
-        self.page_id = array[0]
-        self.title = array[1]
-        self.type = array[2]
-
-
-class ArticleParent(object):
-    def __init__(self, array):
-        self.article_id = array[0]
-        self.categories = array[1:]
-
-
-class CategoryParent(object):
-    def __init__(self, array):
-        self.category_id = array[0]
-        self.parent_categories = array[1:]
-
-
-class ChildArticle(object):
-    def __init__(self, array):
-        self.category_id = array[0]
-        self.articles = array[1:]
-
-
-class ChildCategory(object):
-    def __init__(self, array):
-        self.category_id = array[0]
-        self.child_categories = array[1:]
-
-
-class LinkBySource(object):
-    def __init__(self, array):
-        self.source_id = array[0]
-        self.article_names = array[1:]
-
-
-class WordTuple(object):
-    def __init__(self, lemma, type):
-        self.lemma = lemma
-        self.type = type
 
 
 def get_pickled(filename):
@@ -169,29 +35,6 @@ def cleaning(doc_list, stopwords):
     # the benefit for the training is very small
     if len(txt) > 0:
         return txt
-
-
-class Word(object):
-    def __init__(self, word, pos, entity_id):
-        self.word = word
-        self.pos = pos
-        self.entity_id = entity_id
-
-
-class WordTriplet(object):
-    def __init__(self, lemma, morpho_type, entity_id):
-        self.lemma = lemma
-        self.moprho_type = morpho_type
-        self.entity_id = entity_id
-
-
-class Entity(object):
-    def __init__(self, entity, context):
-        self.entity = entity
-        self.context = context
-
-    def add_context(self, _c):
-        self.context.extend(_c)
 
 
 def get_word_tuples(docs):
@@ -512,7 +355,6 @@ def extract_main_entity_category(jsons, types, _category_vectors, _model_v2w, _c
             outsiders.append(_json)
 
 
-
 def read_json_file(json_file):
     with open(json_file) as f:
         _data = [json.loads(line) for line in f]
@@ -694,12 +536,6 @@ def get_mentions(docs):
     return '+'.join(map(lambda x: x.link_title, filter(lambda d: len(d.link_title) > 1, docs)))
 
 
-class Mention(object):
-    def __init__(self, sentence, with_entity):
-        self.sentence = sentence
-        self.with_entity = with_entity
-
-
 def get_sentences_with_mentions(triplets):
     sentences = []
     handy = []
@@ -853,11 +689,11 @@ def contains_digit(string):
     return any(i.isdigit() for i in string)
 
 
-def clean_tuples(_list):
+def clean_tuples(_list, _lemma_map, _stopwords):
     _new_list2 = []
     for _tuple in _list:
-        _e1 = extract_tuple_text(_tuple[1])
-        _e1.extend(extract_tuple_text(_tuple[2])) if _tuple[2] else None
+        _e1 = extract_tuple_text(_tuple[1], _lemma_map, _stopwords)
+        _e1.extend(extract_tuple_text(_tuple[2], _lemma_map, _stopwords)) if _tuple[2] else None
         _new_list2.append((_tuple[0], set(flatten_list(_e1))))
     return _new_list2
 
@@ -977,7 +813,7 @@ class recursion_limit:
 
 def filter_out_blinds(features):
     return list(filter(lambda x: x not in (
-    'Q55983715', 'Q23958852', 'Q24017414', 'Q24017465', 'Q16889133', 'Q21146257', 'Q17538690', 'Q83306', 'Q328'),
+        'Q55983715', 'Q23958852', 'Q24017414', 'Q24017465', 'Q16889133', 'Q21146257', 'Q17538690', 'Q83306', 'Q328'),
                        features))
 
 

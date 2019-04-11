@@ -55,7 +55,7 @@ def merge_tuple_map(_map1, _map2):
             _map1[_key].extend(_list)
 
 
-def remove_disamb_pages(_map):
+def remove_disamb_pages(_map, _lemma_map, _stopwords):
     _clean_map = {}
     for _key, _list in _map.items():
         if _key == 'złoty':
@@ -67,12 +67,27 @@ def remove_disamb_pages(_map):
                     _tuple[2].split()
                     _new_list.append(_tuple)
         if len(_new_list) > 0:
-            _clean_map[_key] = clean_tuples(_new_list)
+            _clean_map[_key] = clean_tuples(_new_list, _lemma_map, _stopwords)
     return _clean_map
 
 
+def list_to_map(_list):
+    _map = {}
+    for _tuple in _list:
+        if _tuple[0] not in _map:
+            _map[_tuple[0]] = _tuple[1]
+    return _map
+
 stopwords = get_polish_stopwords()
 lemma_map = get_pickled("lemma_map_ext")
+
+
+scrapped_not_found_errors = get_pickled("scrapped_not_found_errors")
+_map_0 = list_to_map(scrapped_not_found_errors)
+_map = remove_disamb_pages(_map_0, lemma_map, stopwords)
+
+save_to_file("scrapped_not_found_errors_clean", _map)
+
 
 tuple_map0 = remove_disamb_pages(get_pickled("tuple_map_scrap-{}".format(2)))
 for i in range(3,37):
