@@ -49,7 +49,7 @@ preceding_space – 1 indicates that the token was preceded by a blank character
 link_title – the title of the Wikipedia article that is a target of an internal link containing given token; some of the links point to articles that do not exist in Wikipedia; _ (underscore) is used when the token is not part of a link,
 entity_id – the ID of the entity in Wikidata; this value has to be determined by the algorithm; _ (underscore) is used when the ID could not be established.
 
-* Sample data
+Sample data
 
 * 2 Nazwa 1 _ _
 * 2 języka 1 _ _
